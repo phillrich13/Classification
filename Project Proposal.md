@@ -2,10 +2,10 @@
 
 ## Question
 ### Framing
-I am volunteering with the Austin Animal Center to develop a classification model to help them understand likely outcomes for newly acquired pets.
+I am volunteering with the Austin Animal Center to develop a classification model to help them understand likely outcomes for newly acquired animals. (Exclusively cats and dogs as they make over ~95% of all animals in the data)
 
 ### Benefits
-The Austin Animal Center wants to be able to predict likely outcomes with newly received animals so that they better plan a few things:
+The Austin Animal Center wants to be able to predict likely outcomes with newly received animals so that they can better plan a few things:
 * Space for new animals, may need to transfer animals with outcomes associated with long term stays to make room for more urgent situations
 * Budget considerations, long term animals require more money and if they can better understand the incoming animals they can better plan their budget and request more funding
 * Pre-emptive care and potential change in process for animals predicted for Euthanasia
@@ -47,5 +47,5 @@ I will use pandas, scikitlearn, and any other python packages for the modeling p
 Visualization portion will be dependent on time availabe to me. Tableau is preferable.
 
 ## MVP
-A Random Forests model to predict the outcome based on the listed features above.
+Would like to try tree based model to predict the outcome based on the listed features above.
 
