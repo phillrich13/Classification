@@ -44,6 +44,8 @@ Animal Stay outcome:
 ### Meeting Tools Requirements
 I will use pandas, scikitlearn, and any other python packages for the modeling portions.
 
+I have to use SQL to join the 2 data sets as there is no distinct identifier and its going to take some date manipulation to get accurate records.
+
 Visualization portion will be dependent on time availabe to me. Tableau is preferable.
 
 ## MVP
