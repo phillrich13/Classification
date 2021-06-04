@@ -5,7 +5,9 @@ DROP TABLE IF EXISTS temp.testing;
 DROP TABLE IF EXISTS temp.mins;
 
 
-# Creating a base table for joining intake file and outcome file. No primary key in either data set, animalid is unique per animal, same animal can be seen multiple times. Using SQLlite date requires biggest to smallest data format (YY/MM/DD HH:MM:SS) so re-ordering base date to accomodate. Limiting join to where outcome date is after intake date for logical time relationships.
+# Creating a base table for joining intake file and outcome file. No primary key in either data set, animalid is unique per animal, 
+# same animal can be seen multiple times. Using SQLlite date requires biggest to smallest data format (YY/MM/DD HH:MM:SS) so re-ordering base date to accomodate. 
+# Limiting join to where outcome date is after intake date for logical time relationships.
 
 create temp table testing
 as
@@ -30,7 +32,9 @@ from temp.testing
 group by 1,2
 ;
 
-#Joining to limit each animal id to minimum stay length as for a given intake, there can only be 1 outcome, so if there are multiple outcomes for an animal, it follows that the outcome date closes to the intake date is the correct outcome date. Also ranking over time to measure how many times the animal has been to the animal center (hence the minus 1 as there were 0 prior visits at their first visit).
+#Joining to limit each animal id to minimum stay length as for a given intake, there can only be 1 outcome, so if there are multiple outcomes for an animal, 
+# it follows that the outcome date closes to the intake date is the correct outcome date. Also ranking over time to measure how many times the animal has been 
+# to the animal center (hence the minus 1 as there were 0 prior visits at their first visit).
 
 create table full_process
 as
