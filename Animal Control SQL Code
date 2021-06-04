@@ -1,9 +1,15 @@
+# Coded in SQLlite using DB Browser
+
+# Dropping created temp tables for ease of re-running
 DROP TABLE IF EXISTS temp.testing;
 DROP TABLE IF EXISTS temp.mins;
 
+
+# Creating a base table for joining intake file and outcome file. No primary key in either data set, animalid is unique per animal, same animal can be seen multiple times. Using SQLlite date requires biggest to smallest data format (YY/MM/DD HH:MM:SS) so re-ordering base date to accomodate. Limiting join to where outcome date is after intake date for logical time relationships.
+
 create temp table testing
 as
-select I.*, O.OutcomeType,	O.OutcomeSubtype,
+select I.*, O.OutcomeType, O.OutcomeSubtype,
 date(substr(O.datetime ,7,4) || '-' ||substr(O.datetime ,1,2)  || '-' || substr(O.datetime ,4,2) || substr(O.datetime ,11, length( O.datetime) -13)) as outcomedate,  
 date(substr(I.datetime ,7,4) || '-' ||substr(I.datetime ,1,2)  || '-' || substr(I.datetime ,4,2) || substr(I.datetime ,11, length( I.datetime) -13)) as intakedate, 
 round(julianday(substr(O.datetime ,7,4) || '-' ||substr(O.datetime ,1,2)  || '-' || substr(O.datetime ,4,2) || substr(O.datetime ,11, length( O.datetime) -13))  -  julianday(substr(I.datetime ,7,4) || '-' ||substr(I.datetime ,1,2)  || '-' || substr(I.datetime ,4,2) || substr(I.datetime ,11, length( I.datetime) -13)))  as staylength
@@ -15,6 +21,7 @@ and I.datetime < O.datetime
 and julianday(substr(O.datetime ,7,4) || '-' ||substr(O.datetime ,1,2)  || '-' || substr(O.datetime ,4,2) || substr(O.datetime ,11, length( O.datetime) -13))  -  julianday(substr(I.datetime ,7,4) || '-' ||substr(I.datetime ,1,2)  || '-' || substr(I.datetime ,4,2) || substr(I.datetime ,11, length( I.datetime) -13)) > 0
 order by I.AnimalID, I.DateTime;
 
+# Due to lack of PK, creating a field find the smallest staylength for each animal at a specific input date to create logical animal intake and outcome combos
 
 create temp table mins
 as
@@ -22,6 +29,8 @@ SELECT AnimalID, datetime, min(staylength)  as minjoin
 from temp.testing
 group by 1,2
 ;
+
+#Joining to limit each animal id to minimum stay length as for a given intake, there can only be 1 outcome, so if there are multiple outcomes for an animal, it follows that the outcome date closes to the intake date is the correct outcome date. Also ranking over time to measure how many times the animal has been to the animal center (hence the minus 1 as there were 0 prior visits at their first visit).
 
 create table full_process
 as
