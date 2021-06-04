@@ -1,0 +1,33 @@
+DROP TABLE IF EXISTS temp.testing;
+DROP TABLE IF EXISTS temp.mins;
+
+create temp table testing
+as
+select I.*, O.OutcomeType,	O.OutcomeSubtype,
+date(substr(O.datetime ,7,4) || '-' ||substr(O.datetime ,1,2)  || '-' || substr(O.datetime ,4,2) || substr(O.datetime ,11, length( O.datetime) -13)) as outcomedate,  
+date(substr(I.datetime ,7,4) || '-' ||substr(I.datetime ,1,2)  || '-' || substr(I.datetime ,4,2) || substr(I.datetime ,11, length( I.datetime) -13)) as intakedate, 
+round(julianday(substr(O.datetime ,7,4) || '-' ||substr(O.datetime ,1,2)  || '-' || substr(O.datetime ,4,2) || substr(O.datetime ,11, length( O.datetime) -13))  -  julianday(substr(I.datetime ,7,4) || '-' ||substr(I.datetime ,1,2)  || '-' || substr(I.datetime ,4,2) || substr(I.datetime ,11, length( I.datetime) -13)))  as staylength
+from Intakes I
+inner join Outcomes O
+on I.AnimalID = O.AnimalID
+and I.AgeuponIntake <= O.AgeuponOutcome
+and I.datetime < O.datetime
+and julianday(substr(O.datetime ,7,4) || '-' ||substr(O.datetime ,1,2)  || '-' || substr(O.datetime ,4,2) || substr(O.datetime ,11, length( O.datetime) -13))  -  julianday(substr(I.datetime ,7,4) || '-' ||substr(I.datetime ,1,2)  || '-' || substr(I.datetime ,4,2) || substr(I.datetime ,11, length( I.datetime) -13)) > 0
+order by I.AnimalID, I.DateTime;
+
+
+create temp table mins
+as
+SELECT AnimalID, datetime, min(staylength)  as minjoin
+from temp.testing
+group by 1,2
+;
+
+create table full_process
+as
+select t.*, rank() OVER ( PARTITION by t.AnimalID ORDER by t.intakedate) -1 as prior_occurs
+from temp.testing t
+inner join mins m
+on t.AnimalID = m.AnimalID
+and t.datetime = m.datetime
+and t.staylength = m.minjoin;
